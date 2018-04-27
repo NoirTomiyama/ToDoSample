@@ -72,6 +72,7 @@ public class MemoActivity extends AppCompatActivity {
         if(memo==null){
             memo = realm.where(RealmMemo.class).equalTo("updateDate",
                     getIntent().getStringExtra("updateDate")).findFirst();
+            
         }
 
 
