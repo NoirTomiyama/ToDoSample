@@ -1,5 +1,6 @@
 package com.lifeistech.android.todosample;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,8 @@ public class DetailActivity extends AppCompatActivity {
 
     public EditText titleText;
     public EditText contentText;
+
+    RealmMemo memo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +43,9 @@ public class DetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                // 値を詰めないと
+//                NavUtils.navigateUpFromSameTask(this);
+
+                finish();
 
                 return true;
         }
@@ -51,7 +55,7 @@ public class DetailActivity extends AppCompatActivity {
 
     public  void showData() {
 
-        final RealmMemo memo = realm.where(RealmMemo.class).equalTo("updateDate",
+         memo = realm.where(RealmMemo.class).equalTo("updateDate",
                 getIntent().getStringExtra("updateDate")).findFirst();
 
         titleText.setText(memo.title);

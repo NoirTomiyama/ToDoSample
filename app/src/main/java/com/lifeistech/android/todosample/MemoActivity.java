@@ -26,9 +26,6 @@ public class MemoActivity extends AppCompatActivity {
 
     RealmMemo memo;
 
-    static int requestCode = 1001;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +37,17 @@ public class MemoActivity extends AppCompatActivity {
         titleTextView = findViewById(R.id.titleTextView);
         contentTextView = findViewById(R.id.contentTextView);
         checkBox = findViewById(R.id.checkBox);
+
+        memo = realm.where(RealmMemo.class).equalTo("updateDate",
+                getIntent().getStringExtra("updateDate")).findFirst();
+
+        // チェックボックスの更新
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                memo.isChecked = getIntent().getBooleanExtra("isChecked",false);
+            }
+        });
 
 
         checkBox.setOnClickListener(new View.OnClickListener() {
@@ -69,21 +77,6 @@ public class MemoActivity extends AppCompatActivity {
 
     public  void showData() {
 
-        if(memo==null){
-            memo = realm.where(RealmMemo.class).equalTo("updateDate",
-                    getIntent().getStringExtra("updateDate")).findFirst();
-            
-        }
-
-
-
-        // チェックボックスの更新
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-//                memo.isChecked = getIntent().getBooleanExtra("isChecked",false);
-            }
-        });
 
         titleTextView.setText(memo.title);
         contentTextView.setText(memo.content);
@@ -95,18 +88,7 @@ public class MemoActivity extends AppCompatActivity {
 
         Intent intent = new Intent(MemoActivity.this,DetailActivity.class);
         intent.putExtra("updateDate", memo.updateDate);
-//        startActivity(intent);
-        startActivityForResult(intent,requestCode);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-//        super.onActivityResult(requestCode, resultCode, intent);
-        if(requestCode == 1001){
-            if(resultCode == Activity.RESULT_OK){
-
-            }
-        }
+        startActivity(intent);
     }
 
     @Override
