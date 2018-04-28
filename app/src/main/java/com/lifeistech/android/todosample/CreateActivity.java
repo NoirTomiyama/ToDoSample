@@ -1,5 +1,6 @@
 package com.lifeistech.android.todosample;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,12 +13,17 @@ import java.util.Locale;
 
 import io.realm.Realm;
 
+import static com.lifeistech.android.todosample.MainActivity.dateSet;
+
 public class CreateActivity extends AppCompatActivity {
 
     public Realm realm;
 
     public EditText titleEditText;
     public EditText contentEditText;
+
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,23 +35,44 @@ public class CreateActivity extends AppCompatActivity {
 
         realm = Realm.getDefaultInstance();
 
+
+        pref = getSharedPreferences("tasks",MODE_PRIVATE);
+
     }
+
+    //データをRealmに保存する
+//    public void save(final String title,final String updateDate,final String content){
+//
+//        //メモを保存する
+//        realm.executeTransaction(new Realm.Transaction() {
+//            @Override
+//            public void execute(Realm realm) {
+//                RealmMemo memo = realm.createObject(RealmMemo.class);
+//                memo.title = title;
+//                memo.updateDate = updateDate;
+//                memo.content = content;
+//                memo.isChecked = false;
+//            }
+//        });
+//    }
 
     //データをRealmに保存する
     public void save(final String title,final String updateDate,final String content){
 
-        //メモを保存する
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmMemo memo = realm.createObject(RealmMemo.class);
-                memo.title = title;
-                memo.updateDate = updateDate;
-                memo.content = content;
-                memo.isChecked = false;
-            }
-        });
+        // メモを保存する
+
+        dateSet.add(updateDate);
+
+        editor = pref.edit();
+
+        editor.putString(updateDate,title);
+        editor.putString(updateDate + "_" + title,content);
+        editor.putBoolean(updateDate + "_" + content,false);
+        editor.commit();
+
     }
+
+
 
     // EditText に入力されたデータを元にMemoを作る
     public void create(View v){

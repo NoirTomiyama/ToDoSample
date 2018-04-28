@@ -41,8 +41,8 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
         }
     }
 
-    public RealmMemoAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<RealmMemo> objects) {
-        super(context, textViewResourceId, objects);
+    public RealmMemoAdapter(@NonNull Context context, int resource, @NonNull List<RealmMemo> objects) {
+        super(context, resource, objects);
 
 //        layoutinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mMemos = objects;

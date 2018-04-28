@@ -1,6 +1,7 @@
 package com.lifeistech.android.todosample;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,7 +20,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.TreeSet;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -34,6 +41,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     FrameLayout frameLayout;
     TextView explainText;
+
+
+    /*
+        SharedPreferencesを用いる．
+        0. Realmモード，SharedPreferencesモード
+        1. 保存する情報として，
+            ・タイトル // keyにもなっている
+            ・本文
+            ・CheckBox->Boolean型
+
+            HashMap<String,String> × 4
+        2. 日時情報(key)を入れる
+            TreeSet<String> dateSet;
+
+     */
+
+    HashMap<String,String> titleMap; //key : date, value : title
+    HashMap<String,String> contentMap;  //key : date_title, value : content
+    HashMap<String,Boolean> checkMap;  // key : date_content , value : boolean
+    static TreeSet<String> dateSet; // key(date)の集合
+
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +92,78 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         explainText = findViewById(R.id.explainText);
         explainText.setText("You have no TO-DOs!");
 
+        // SharedPreferences
+
+        titleMap = new HashMap<>();
+        contentMap = new HashMap<>();
+        checkMap = new HashMap<>();
+
+        dateSet = new TreeSet<>();
+
+        pref = getSharedPreferences("tasks",MODE_PRIVATE);
+
+        editor = pref.edit();
+        editor.putString("technology","科学技術");
+        editor.putString("develop","開発する");
+        editor.commit();
+
+        setTaskList();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        setMemoList();
+        // Realm用
+//        setMemoList();
+
+        setTaskList();
+
+    }
+
+    public void setTaskList() {
+
+        ArrayList<Task> items = new ArrayList<>();
+
+        dateSet.add("technology");
+        dateSet.add("develop");
+
+        //Setに保存したdateを取得
+        dateSet.addAll(pref.getStringSet("dateSet",dateSet));
+
+        //Mapに追加
+        for(String date : dateSet){
+            //SharedPreferencesの各要素を取得
+            //(検索機能のためMapに追加)
+
+//            titleMap.put(
+//                    date,
+//                    pref.getString(date,null)
+//            );
+//
+//            contentMap.put(
+//                    date + "_" + pref.getString(date,null),
+//                    pref.getString(date + "_" + pref.getString(date,null),null));
+//
+//            checkMap.put(
+//                    date + "_" + pref.getString(date + "_" + pref.getString(date,null),null),
+//                    pref.getBoolean(date + "_" + pref.getString(date + "_" + pref.getString(date,null),null),false));
+
+            Task task = new Task(
+                    date,
+                    pref.getString(date,null),
+                    pref.getString(date + "_" + pref.getString(date,null) , null),
+                    pref.getBoolean(date + "_" + pref.getString(date + "_" + pref.getString(date,null),null) , false)
+            );
+
+            items.add(task);
+        }
+
+        SharedAdapter adapter = new SharedAdapter(this,R.layout.layout_task_memo,items);
+
+        listView.setAdapter(adapter);
+
     }
 
     public void setMemoList(){
