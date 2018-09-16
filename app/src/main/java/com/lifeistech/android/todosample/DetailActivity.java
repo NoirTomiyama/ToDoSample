@@ -44,7 +44,6 @@ public class DetailActivity extends AppCompatActivity {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
 //                NavUtils.navigateUpFromSameTask(this);
-
                 finish();
 
                 return true;
@@ -55,7 +54,7 @@ public class DetailActivity extends AppCompatActivity {
 
     public  void showData() {
 
-         memo = realm.where(RealmMemo.class).equalTo("updateDate",
+        memo = realm.where(RealmMemo.class).equalTo("updateDate",
                 getIntent().getStringExtra("updateDate")).findFirst();
 
         titleText.setText(memo.title);
@@ -76,6 +75,10 @@ public class DetailActivity extends AppCompatActivity {
                 memo.content = contentText.getText().toString();
             }
         });
+
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+
 
         // 画面を閉じる
         finish();

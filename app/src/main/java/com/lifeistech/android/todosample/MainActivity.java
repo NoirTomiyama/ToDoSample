@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FrameLayout frameLayout;
     TextView explainText;
 
+    TextView statusTextView;
+
+    int mode = 0;
 
     /*
         SharedPreferencesを用いる．
@@ -57,14 +61,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
      */
 
-    HashMap<String,String> titleMap; //key : date, value : title
-    HashMap<String,String> contentMap;  //key : date_title, value : content
-    HashMap<String,Boolean> checkMap;  // key : date_content , value : boolean
-    static TreeSet<String> dateSet; // key(date)の集合
-
-    SharedPreferences pref;
-    SharedPreferences.Editor editor;
-
+//    HashMap<String,String> titleMap; //key : date, value : title
+//    HashMap<String,String> contentMap;  //key : date_title, value : content
+//    HashMap<String,Boolean> checkMap;  // key : date_content , value : boolean
+//    static TreeSet<String> dateSet; // key(date)の集合
+//
+//    SharedPreferences pref;
+//    SharedPreferences.Editor editor;
 
 
     @Override
@@ -90,24 +93,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listView = findViewById(R.id.listView);
         frameLayout = findViewById(R.id.frameLaytout);
         explainText = findViewById(R.id.explainText);
-        explainText.setText("You have no TO-DOs!");
+
+        statusTextView = findViewById(R.id.statusTextView);
 
         // SharedPreferences
 
-        titleMap = new HashMap<>();
-        contentMap = new HashMap<>();
-        checkMap = new HashMap<>();
+//        titleMap = new HashMap<>();
+//        contentMap = new HashMap<>();
+//        checkMap = new HashMap<>();
+//
+//        dateSet = new TreeSet<>();
+//
+//        pref = getSharedPreferences("tasks",MODE_PRIVATE);
+//
+//        editor = pref.edit();
+//        editor.putString("technology","科学技術");
+//        editor.putString("develop","開発する");
+//        editor.commit();
 
-        dateSet = new TreeSet<>();
-
-        pref = getSharedPreferences("tasks",MODE_PRIVATE);
-
-        editor = pref.edit();
-        editor.putString("technology","科学技術");
-        editor.putString("develop","開発する");
-        editor.commit();
-
-        setTaskList();
+//        setTaskList();
+        setMemoList();
 
     }
 
@@ -116,69 +121,91 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
 
         // Realm用
-//        setMemoList();
+        setMemoList();
 
-        setTaskList();
+//        setTaskList();
 
     }
 
-    public void setTaskList() {
-
-        ArrayList<Task> items = new ArrayList<>();
-
-        dateSet.add("technology");
-        dateSet.add("develop");
-
-        //Setに保存したdateを取得
-        dateSet.addAll(pref.getStringSet("dateSet",dateSet));
-
-        //Mapに追加
-        for(String date : dateSet){
-            //SharedPreferencesの各要素を取得
-            //(検索機能のためMapに追加)
-
-//            titleMap.put(
+//    public void setTaskList() {
+//
+//        ArrayList<Task> items = new ArrayList<>();
+//
+//        dateSet.add("technology");
+//        dateSet.add("develop");
+//
+//        //Setに保存したdateを取得
+//        dateSet.addAll(pref.getStringSet("dateSet",dateSet));
+//
+//        //Mapに追加
+//        for(String date : dateSet){
+//            //SharedPreferencesの各要素を取得
+//            //(検索機能のためMapに追加)
+//
+////            titleMap.put(
+////                    date,
+////                    pref.getString(date,null)
+////            );
+////
+////            contentMap.put(
+////                    date + "_" + pref.getString(date,null),
+////                    pref.getString(date + "_" + pref.getString(date,null),null));
+////
+////            checkMap.put(
+////                    date + "_" + pref.getString(date + "_" + pref.getString(date,null),null),
+////                    pref.getBoolean(date + "_" + pref.getString(date + "_" + pref.getString(date,null),null),false));
+//
+//            Task task = new Task(
 //                    date,
-//                    pref.getString(date,null)
+//                    pref.getString(date,null),
+//                    pref.getString(date + "_" + pref.getString(date,null) , null),
+//                    pref.getBoolean(date + "_" + pref.getString(date + "_" + pref.getString(date,null),null) , false)
 //            );
 //
-//            contentMap.put(
-//                    date + "_" + pref.getString(date,null),
-//                    pref.getString(date + "_" + pref.getString(date,null),null));
+//            items.add(task);
+//        }
 //
-//            checkMap.put(
-//                    date + "_" + pref.getString(date + "_" + pref.getString(date,null),null),
-//                    pref.getBoolean(date + "_" + pref.getString(date + "_" + pref.getString(date,null),null),false));
-
-            Task task = new Task(
-                    date,
-                    pref.getString(date,null),
-                    pref.getString(date + "_" + pref.getString(date,null) , null),
-                    pref.getBoolean(date + "_" + pref.getString(date + "_" + pref.getString(date,null),null) , false)
-            );
-
-            items.add(task);
-        }
-
-        SharedAdapter adapter = new SharedAdapter(this,R.layout.layout_task_memo,items);
-
-        listView.setAdapter(adapter);
-
-    }
+//        SharedAdapter adapter = new SharedAdapter(this,R.layout.layout_task_memo,items);
+//
+//        listView.setAdapter(adapter);
+//
+//    }
 
     public void setMemoList(){
 
+        RealmResults<RealmMemo> results = null;
+
+        if(mode == 0){
+            statusTextView.setText("All TO-DOs");
+            results = realm.where(RealmMemo.class).findAll();
+        } else if (mode == 1){
+            statusTextView.setText("Completed TO-DOs");
+            results = realm.where(RealmMemo.class)
+                        .equalTo("isChecked",true)
+                        .findAll();
+
+        } else if (mode == 2){
+            statusTextView.setText("Active TO-DOs");
+            results = realm.where(RealmMemo.class)
+                        .equalTo("isChecked",false)
+                        .findAll();
+        }
+
         //realmから読み取る
-        RealmResults<RealmMemo> results = realm.where(RealmMemo.class).findAll();
+
         List<RealmMemo> items = realm.copyFromRealm(results);
 
         if(items.isEmpty()){
             frameLayout.setVisibility(View.VISIBLE);
             explainText.setVisibility(View.VISIBLE);
+            explainText.setText("You have no TO-DOs!");
+            statusTextView.setVisibility(View.INVISIBLE);
 
         }else{
             frameLayout.setVisibility(View.INVISIBLE);
             explainText.setVisibility(View.INVISIBLE);
+            statusTextView.setVisibility(View.VISIBLE);
+
         }
 
         RealmMemoAdapter adapter = new RealmMemoAdapter(this,R.layout.layout_task_memo,items);
@@ -243,14 +270,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     case R.id.active:
                         // TODO 未達成タスクの表示
                         Toast.makeText(getApplicationContext(),"active",Toast.LENGTH_SHORT).show();
+                        // TextViewの変更
+                        mode = 2;
+                        setMemoList();
                         break;
                     case R.id.completed:
                         // TODO 達成済タスクの表示
                         Toast.makeText(getApplicationContext(),"completed",Toast.LENGTH_SHORT).show();
+                        mode = 1;
+                        setMemoList();
                         break;
                     case R.id.all:
                         // TODO すべてのタスクの表示
                         Toast.makeText(getApplicationContext(),"all",Toast.LENGTH_SHORT).show();
+                        mode = 0;
+                        setMemoList();
                         break;
                     default:
                         break;

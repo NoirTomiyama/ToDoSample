@@ -13,7 +13,7 @@ import java.util.Locale;
 
 import io.realm.Realm;
 
-import static com.lifeistech.android.todosample.MainActivity.dateSet;
+//import static com.lifeistech.android.todosample.MainActivity.dateSet;
 
 public class CreateActivity extends AppCompatActivity {
 
@@ -22,8 +22,8 @@ public class CreateActivity extends AppCompatActivity {
     public EditText titleEditText;
     public EditText contentEditText;
 
-    SharedPreferences pref;
-    SharedPreferences.Editor editor;
+//    SharedPreferences pref;
+//    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,47 +35,46 @@ public class CreateActivity extends AppCompatActivity {
 
         realm = Realm.getDefaultInstance();
 
+//        pref = getSharedPreferences("tasks",MODE_PRIVATE);
 
-        pref = getSharedPreferences("tasks",MODE_PRIVATE);
+    }
 
+//    データをRealmに保存する
+    public void save(final String title,final String updateDate,final String content){
+
+        //メモを保存する
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmMemo memo = realm.createObject(RealmMemo.class);
+                memo.title = title;
+                memo.updateDate = updateDate;
+                memo.content = content;
+                memo.isChecked = false;
+            }
+        });
     }
 
     //データをRealmに保存する
 //    public void save(final String title,final String updateDate,final String content){
 //
-//        //メモを保存する
-//        realm.executeTransaction(new Realm.Transaction() {
-//            @Override
-//            public void execute(Realm realm) {
-//                RealmMemo memo = realm.createObject(RealmMemo.class);
-//                memo.title = title;
-//                memo.updateDate = updateDate;
-//                memo.content = content;
-//                memo.isChecked = false;
-//            }
-//        });
+//        // メモを保存する
+//
+//        dateSet.add(updateDate);
+//
+//        editor = pref.edit();
+//
+//        editor.putString(updateDate,title);
+//        editor.putString(updateDate + "_" + title,content);
+//        editor.putBoolean(updateDate + "_" + content,false);
+//        editor.commit();
+//
 //    }
-
-    //データをRealmに保存する
-    public void save(final String title,final String updateDate,final String content){
-
-        // メモを保存する
-
-        dateSet.add(updateDate);
-
-        editor = pref.edit();
-
-        editor.putString(updateDate,title);
-        editor.putString(updateDate + "_" + title,content);
-        editor.putBoolean(updateDate + "_" + content,false);
-        editor.commit();
-
-    }
-
 
 
     // EditText に入力されたデータを元にMemoを作る
     public void create(View v){
+
         // タイトルを取得する
         String title = titleEditText.getText().toString();
 
@@ -113,6 +112,7 @@ public class CreateActivity extends AppCompatActivity {
         Log.d("memo.updateDate",memo.updateDate);
         Log.d("memo.content",memo.content);
     }
+
 
     @Override
     protected void onDestroy() {

@@ -80,6 +80,12 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
             viewHolder.titleTextView.setText(memo.title);
             viewHolder.checkBox.setChecked(memo.isChecked);
 
+            if(memo.isChecked){
+                viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#4D000000"));
+            }else{
+                viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#00000000"));
+            }
+
             Log.d("memoTitle", memo.title);
 
             viewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +96,7 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
                     Intent intent = new Intent(view.getContext(),MemoActivity.class);
 
                     // チェックボックスの状態を渡す
-                    intent.putExtra("isChecked",isCheck);
+                    intent.putExtra("isChecked",memo.isChecked);
                     intent.putExtra("updateDate",memo.updateDate);
                     view.getContext().startActivity(intent);
                 }
@@ -105,17 +111,53 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
                         Snackbar.make(parent, "Task marked complete", Snackbar.LENGTH_SHORT)
                                 .setAction("Action", null).show();
                         isCheck = true;
+
+                        // 保存できるか
+                        Realm realm = Realm.getDefaultInstance();
+
+                        final RealmMemo realmMemo = realm.where(RealmMemo.class).equalTo("updateDate",
+                                memo.updateDate).findFirst();
+
+                        realm.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                realmMemo.isChecked = true;
+                            }
+                        });
+
+                        Log.d("checkOn","came");
+                        realm.close();
+
                     } else {
 //                        Toast.makeText(getContext(),"checked:false",Toast.LENGTH_SHORT).show();
                         viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#00000000"));
                         Snackbar.make(parent, "Task marked active", Snackbar.LENGTH_SHORT)
                                 .setAction("Action", null).show();
+
                         isCheck = false;
+
+                        Realm realm = Realm.getDefaultInstance();
+
+                        final RealmMemo realmMemo = realm.where(RealmMemo.class).equalTo("updateDate",
+                                memo.updateDate).findFirst();
+
+                        realm.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                realmMemo.isChecked = false;
+                            }
+                        });
+
+                        Log.d("checkOn","came");
+                        realm.close();
+
+
                     }
                 }
             });
 
         }
+
 
         return convertView;
     }

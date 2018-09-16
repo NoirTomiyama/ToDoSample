@@ -75,8 +75,7 @@ public class MemoActivity extends AppCompatActivity {
         showData();
     }
 
-    public  void showData() {
-
+    public void showData() {
 
         titleTextView.setText(memo.title);
         contentTextView.setText(memo.content);
@@ -84,11 +83,12 @@ public class MemoActivity extends AppCompatActivity {
 
     }
 
-    public void update(View v){
+    public void update(View v) {
 
-        Intent intent = new Intent(MemoActivity.this,DetailActivity.class);
+        Intent intent = new Intent(MemoActivity.this, DetailActivity.class);
         intent.putExtra("updateDate", memo.updateDate);
-        startActivity(intent);
+//        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     @Override
@@ -122,6 +122,19 @@ public class MemoActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d("onActivityResult","came");
+
+
+        if(resultCode == RESULT_OK){
+            finish();
+            Log.d("test","test");
+        }
     }
 
     @Override

@@ -4,14 +4,12 @@ public class Task {
 
     // 日付
     public String updateDate;
-
     // タイトル
     public String title;
     // 内容
     public String content;
     //チェックボックス(完了かどうか)
     public Boolean isChecked;
-
 
 
     public String getUpdateDate() {
