@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.filter_tasks, menu);
         return true;
     }
 
@@ -241,18 +241,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         switch (id){
-            case R.id.menu_clear:
-                Toast.makeText(this,"menu_clear",Toast.LENGTH_SHORT).show();
+
+            case R.id.active:
+                // TODO 未達成タスクの表示
+                Toast.makeText(getApplicationContext(),"active",Toast.LENGTH_SHORT).show();
+                // TextViewの変更
+                mode = 2;
+                setMemoList();
                 break;
-            case R.id.menu_refresh:
-                Toast.makeText(this,"menu_refresh",Toast.LENGTH_SHORT).show();
+            case R.id.completed:
+                // TODO 達成済タスクの表示
+                Toast.makeText(getApplicationContext(),"completed",Toast.LENGTH_SHORT).show();
+                mode = 1;
+                setMemoList();
                 break;
-            case R.id.menu_filter:
-//                Toast.makeText(this,"menu_filter",Toast.LENGTH_SHORT).show();
-                setPopup();
+            case R.id.all:
+                // TODO すべてのタスクの表示
+                Toast.makeText(getApplicationContext(),"all",Toast.LENGTH_SHORT).show();
+                mode = 0;
+                setMemoList();
                 break;
             default:
                 break;
+
+//            case R.id.menu_clear:
+//                Toast.makeText(this,"menu_clear",Toast.LENGTH_SHORT).show();
+//                break;
+//            case R.id.menu_refresh:
+//                Toast.makeText(this,"menu_refresh",Toast.LENGTH_SHORT).show();
+//                break;
+//            case R.id.menu_filter:
+////                Toast.makeText(this,"menu_filter",Toast.LENGTH_SHORT).show();
+//                setPopup();
+//                break;
+//            default:
+//                break;
+
         }
 
         return super.onOptionsItemSelected(item);
