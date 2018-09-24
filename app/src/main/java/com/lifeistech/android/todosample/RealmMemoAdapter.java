@@ -92,6 +92,7 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
                 @Override
                 public void onClick(View view) {
 //                    Toast.makeText(getContext(),"onClick",Toast.LENGTH_SHORT).show();
+                    viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#4D000000"));
                     // Adapter内でのIntent処理
                     Intent intent = new Intent(view.getContext(),MemoActivity.class);
 
@@ -101,6 +102,7 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
                     view.getContext().startActivity(intent);
                 }
             });
+
             viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

@@ -173,6 +173,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setMemoList(){
 
+        // ①
+        // ②
+
+
         RealmResults<RealmMemo> results = null;
 
         if(mode == 0){
