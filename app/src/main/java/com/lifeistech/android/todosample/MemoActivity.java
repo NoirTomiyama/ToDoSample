@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import io.realm.Realm;
 
-// MainActivityから，項目１つ分について飛ぶ
+// MainActivityから，項目ひとつぶんに飛ぶ
 public class MemoActivity extends AppCompatActivity {
 
     public Realm realm;
@@ -38,16 +38,18 @@ public class MemoActivity extends AppCompatActivity {
         contentTextView = findViewById(R.id.contentTextView);
         checkBox = findViewById(R.id.checkBox);
 
-        memo = realm.where(RealmMemo.class).equalTo("updateDate",
-                getIntent().getStringExtra("updateDate")).findFirst();
+        memo = realm
+                .where(RealmMemo.class)
+                .equalTo("updateDate", getIntent().getStringExtra("updateDate"))
+                .findFirst();
 
-        // チェックボックスの更新
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                memo.isChecked = getIntent().getBooleanExtra("isChecked",false);
-            }
-        });
+//        // チェックボックスの更新
+//        realm.executeTransaction(new Realm.Transaction() {
+//            @Override
+//            public void execute(Realm realm) {
+//                memo.isChecked = getIntent().getBooleanExtra("isChecked",false);
+//            }
+//        });
 
 
         checkBox.setOnClickListener(new View.OnClickListener() {

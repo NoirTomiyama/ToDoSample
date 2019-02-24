@@ -1,6 +1,5 @@
 package com.lifeistech.android.todosample;
 
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +11,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import io.realm.Realm;
-
-//import static com.lifeistech.android.todosample.MainActivity.dateSet;
 
 public class CreateActivity extends AppCompatActivity {
 
@@ -55,7 +52,7 @@ public class CreateActivity extends AppCompatActivity {
         });
     }
 
-    //データをRealmに保存する
+    //データをSharedPreferenceに保存する
 //    public void save(final String title,final String updateDate,final String content){
 //
 //        // メモを保存する
@@ -89,7 +86,7 @@ public class CreateActivity extends AppCompatActivity {
         //出力してみる
 //        check(title,updateDate,content);
 
-        //保存する
+        // 保存する
         save(title,updateDate,content);
 
         // 画面を終了する
@@ -112,7 +109,6 @@ public class CreateActivity extends AppCompatActivity {
         Log.d("memo.updateDate",memo.updateDate);
         Log.d("memo.content",memo.content);
     }
-
 
     @Override
     protected void onDestroy() {

@@ -24,24 +24,26 @@ import io.realm.Realm;
 public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
 
 //    private LayoutInflater layoutinflater;
-    List<RealmMemo> mMemos;
+    private List<RealmMemo> mMemos;
 
-    boolean isCheck = false;
+//    private boolean isCheck = false;
+
+    private OnCheckClickListener onCheckClickListener = null;
 
     public static class ViewHolder{
 
-        public LinearLayout linearLayout;
-        public TextView titleTextView;
-        public CheckBox checkBox;
+        LinearLayout linearLayout;
+        TextView titleTextView;
+        CheckBox checkBox;
 
-        public ViewHolder(View view){
+        ViewHolder(View view){
             linearLayout = view.findViewById(R.id.linearLayout);
             titleTextView = view.findViewById(R.id.titleText);
             checkBox = view.findViewById(R.id.checkBox);
         }
     }
 
-    public RealmMemoAdapter(@NonNull Context context, int resource, @NonNull List<RealmMemo> objects) {
+    RealmMemoAdapter(@NonNull Context context, int resource, @NonNull List<RealmMemo> objects) {
         super(context, resource, objects);
 
 //        layoutinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -69,7 +71,6 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
 //            convertView = layoutinflater.inflate(R.layout.layout_task_memo, null);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
-
         }else{
             viewHolder = (ViewHolder) convertView.getTag();
         }
@@ -81,7 +82,7 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
             viewHolder.checkBox.setChecked(memo.isChecked);
 
             if(memo.isChecked){
-                viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#4D000000"));
+                viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#CCCCCC"));
             }else{
                 viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#00000000"));
             }
@@ -92,12 +93,12 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
                 @Override
                 public void onClick(View view) {
 //                    Toast.makeText(getContext(),"onClick",Toast.LENGTH_SHORT).show();
-                    viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#4D000000"));
+                    viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#CCCCCC"));
                     // Adapter内でのIntent処理
                     Intent intent = new Intent(view.getContext(),MemoActivity.class);
 
-                    // チェックボックスの状態を渡す
-                    intent.putExtra("isChecked",memo.isChecked);
+//                     // チェックボックスの状態を渡す
+//                    intent.putExtra("isChecked",memo.isChecked);
                     intent.putExtra("updateDate",memo.updateDate);
                     view.getContext().startActivity(intent);
                 }
@@ -109,25 +110,30 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
                     final boolean checked = ((CheckBox) view).isChecked();
                     if (checked) {
 //                        Toast.makeText(getContext(),"checked:true",Toast.LENGTH_SHORT).show();
-                        viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#4D000000"));
+                        viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#CCCCCC"));
                         Snackbar.make(parent, "Task marked complete", Snackbar.LENGTH_SHORT)
                                 .setAction("Action", null).show();
-                        isCheck = true;
+//                        isCheck = true;
 
-                        // 保存できるか
+                        // 保存する
                         Realm realm = Realm.getDefaultInstance();
 
-                        final RealmMemo realmMemo = realm.where(RealmMemo.class).equalTo("updateDate",
-                                memo.updateDate).findFirst();
+                        final RealmMemo realmMemo = realm
+                                .where(RealmMemo.class)
+                                .equalTo("updateDate", memo.updateDate)
+                                .findFirst();
 
                         realm.executeTransaction(new Realm.Transaction() {
                             @Override
                             public void execute(Realm realm) {
-                                realmMemo.isChecked = true;
+                                if(realmMemo!=null) realmMemo.isChecked = true;
                             }
                         });
 
                         Log.d("checkOn","came");
+
+                        onCheckClickListener.onCheckClick();
+
                         realm.close();
 
                     } else {
@@ -135,24 +141,26 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
                         viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#00000000"));
                         Snackbar.make(parent, "Task marked active", Snackbar.LENGTH_SHORT)
                                 .setAction("Action", null).show();
-
-                        isCheck = false;
+//                        isCheck = false;
 
                         Realm realm = Realm.getDefaultInstance();
 
-                        final RealmMemo realmMemo = realm.where(RealmMemo.class).equalTo("updateDate",
-                                memo.updateDate).findFirst();
+                        final RealmMemo realmMemo = realm
+                                .where(RealmMemo.class)
+                                .equalTo("updateDate", memo.updateDate).findFirst();
 
                         realm.executeTransaction(new Realm.Transaction() {
                             @Override
                             public void execute(Realm realm) {
-                                realmMemo.isChecked = false;
+                                if(realmMemo!=null) realmMemo.isChecked = false;
                             }
                         });
 
                         Log.d("checkOn","came");
-                        realm.close();
 
+                        onCheckClickListener.onCheckClick();
+
+                        realm.close();
 
                     }
                 }
@@ -162,6 +170,14 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
 
 
         return convertView;
+    }
+
+    interface OnCheckClickListener {
+        void onCheckClick();
+    }
+
+    public void setOnCheckClickListener(OnCheckClickListener onCheckClickListener) {
+        this.onCheckClickListener = onCheckClickListener;
     }
 
 
