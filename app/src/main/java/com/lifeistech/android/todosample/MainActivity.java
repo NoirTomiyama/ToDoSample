@@ -32,43 +32,18 @@ import java.util.TreeSet;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, RealmMemoAdapter.OnCheckClickListener{
 
     DrawerLayout drawer;
-
     public Realm realm;
-
     public ListView listView;
 
     FrameLayout frameLayout;
     TextView explainText;
-
     TextView statusTextView;
 
-    int mode = 0;
-
-    /*
-        SharedPreferencesを用いる．
-        0. Realmモード，SharedPreferencesモード
-        1. 保存する情報として，
-            ・タイトル // keyにもなっている
-            ・本文
-            ・CheckBox->Boolean型
-
-            HashMap<String,String> × 4
-        2. 日時情報(key)を入れる
-            TreeSet<String> dateSet;
-
-     */
-
-//    HashMap<String,String> titleMap; //key : date, value : title
-//    HashMap<String,String> contentMap;  //key : date_title, value : content
-//    HashMap<String,Boolean> checkMap;  // key : date_content , value : boolean
-//    static TreeSet<String> dateSet; // key(date)の集合
-//
-//    SharedPreferences pref;
-//    SharedPreferences.Editor editor;
-
+    private int mode = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,22 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         statusTextView = findViewById(R.id.statusTextView);
 
-        // SharedPreferences
 
-//        titleMap = new HashMap<>();
-//        contentMap = new HashMap<>();
-//        checkMap = new HashMap<>();
-//
-//        dateSet = new TreeSet<>();
-//
-//        pref = getSharedPreferences("tasks",MODE_PRIVATE);
-//
-//        editor = pref.edit();
-//        editor.putString("technology","科学技術");
-//        editor.putString("develop","開発する");
-//        editor.commit();
-
-//        setTaskList();
         setMemoList();
 
     }
@@ -120,75 +80,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
 
-        // Realm用
         setMemoList();
 
-//        setTaskList();
-
     }
-
-//    public void setTaskList() {
-//
-//        ArrayList<Task> items = new ArrayList<>();
-//
-//        dateSet.add("technology");
-//        dateSet.add("develop");
-//
-//        //Setに保存したdateを取得
-//        dateSet.addAll(pref.getStringSet("dateSet",dateSet));
-//
-//        //Mapに追加
-//        for(String date : dateSet){
-//            //SharedPreferencesの各要素を取得
-//            //(検索機能のためMapに追加)
-//
-////            titleMap.put(
-////                    date,
-////                    pref.getString(date,null)
-////            );
-////
-////            contentMap.put(
-////                    date + "_" + pref.getString(date,null),
-////                    pref.getString(date + "_" + pref.getString(date,null),null));
-////
-////            checkMap.put(
-////                    date + "_" + pref.getString(date + "_" + pref.getString(date,null),null),
-////                    pref.getBoolean(date + "_" + pref.getString(date + "_" + pref.getString(date,null),null),false));
-//
-//            Task task = new Task(
-//                    date,
-//                    pref.getString(date,null),
-//                    pref.getString(date + "_" + pref.getString(date,null) , null),
-//                    pref.getBoolean(date + "_" + pref.getString(date + "_" + pref.getString(date,null),null) , false)
-//            );
-//
-//            items.add(task);
-//        }
-//
-//        SharedAdapter adapter = new SharedAdapter(this,R.layout.layout_task_memo,items);
-//
-//        listView.setAdapter(adapter);
-//
-//    }
 
     public void setMemoList(){
 
         RealmResults<RealmMemo> results = null;
 
-        if(mode == 0){
-            statusTextView.setText("All TO-DOs");
-            results = realm.where(RealmMemo.class).findAll();
-        } else if (mode == 1){
-            statusTextView.setText("Completed TO-DOs");
-            results = realm.where(RealmMemo.class)
+        switch (mode){
+            case 0:
+                statusTextView.setText("All TO-DOs");
+                results = realm.where(RealmMemo.class).findAll();
+                break;
+            case 1:
+                statusTextView.setText("Completed TO-DOs");
+                results = realm.where(RealmMemo.class)
                         .equalTo("isChecked",true)
                         .findAll();
-
-        } else if (mode == 2){
-            statusTextView.setText("Active TO-DOs");
-            results = realm.where(RealmMemo.class)
+                break;
+            case 2:
+                statusTextView.setText("Active TO-DOs");
+                results = realm.where(RealmMemo.class)
                         .equalTo("isChecked",false)
                         .findAll();
+                break;
+            default:
+                break;
         }
 
         //realmから読み取る
@@ -209,6 +127,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         RealmMemoAdapter adapter = new RealmMemoAdapter(this,R.layout.layout_task_memo,items);
+
+        adapter.setOnCheckClickListener(this);
 
         listView.setAdapter(adapter);
 
@@ -231,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.filter_tasks, menu);
         return true;
     }
 
@@ -241,18 +161,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         switch (id){
-            case R.id.menu_clear:
-                Toast.makeText(this,"menu_clear",Toast.LENGTH_SHORT).show();
+
+            case R.id.active:
+                // TODO 未達成タスクの表示
+                Toast.makeText(getApplicationContext(),"active",Toast.LENGTH_SHORT).show();
+                // TextViewの変更
+                mode = 2;
+                setMemoList();
                 break;
-            case R.id.menu_refresh:
-                Toast.makeText(this,"menu_refresh",Toast.LENGTH_SHORT).show();
+            case R.id.completed:
+                // TODO 達成済タスクの表示
+                Toast.makeText(getApplicationContext(),"completed",Toast.LENGTH_SHORT).show();
+                mode = 1;
+                setMemoList();
                 break;
-            case R.id.menu_filter:
-//                Toast.makeText(this,"menu_filter",Toast.LENGTH_SHORT).show();
-                setPopup();
+            case R.id.all:
+                // TODO すべてのタスクの表示
+                Toast.makeText(getApplicationContext(),"all",Toast.LENGTH_SHORT).show();
+                mode = 0;
+                setMemoList();
                 break;
             default:
                 break;
+
+//            case R.id.menu_clear:
+//                Toast.makeText(this,"menu_clear",Toast.LENGTH_SHORT).show();
+//                break;
+//            case R.id.menu_refresh:
+//                Toast.makeText(this,"menu_refresh",Toast.LENGTH_SHORT).show();
+//                break;
+//            case R.id.menu_filter:
+//                Toast.makeText(this,"menu_filter",Toast.LENGTH_SHORT).show();
+//                setPopup();
+//                break;
+//            default:
+//                break;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -318,5 +262,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // realmを閉じる
         realm.close();
+    }
+
+    @Override
+    public void onCheckClick() {
+        setMemoList();
     }
 }
