@@ -168,7 +168,6 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
 
         }
 
-
         return convertView;
     }
 
