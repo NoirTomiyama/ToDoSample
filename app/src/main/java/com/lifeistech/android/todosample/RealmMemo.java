@@ -14,9 +14,6 @@ public class RealmMemo extends RealmObject {
     //チェックボックス(完了かどうか)
     public Boolean isChecked;
 
-    public Boolean getChecked() {
-        return isChecked;
-    }
 
     public String getTitle() {
         return title;
@@ -26,24 +23,12 @@ public class RealmMemo extends RealmObject {
         this.title = title;
     }
 
-    public String getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(String updateDate) {
-        this.updateDate = updateDate;
-    }
-
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public void setChecked(Boolean checked) {
-        isChecked = checked;
     }
 }
 

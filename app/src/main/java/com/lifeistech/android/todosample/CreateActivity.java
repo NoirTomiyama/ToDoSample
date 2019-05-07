@@ -12,34 +12,38 @@ import java.util.Locale;
 
 import io.realm.Realm;
 
+
+// メモ作成のActivity
 public class CreateActivity extends AppCompatActivity {
 
+    // Realmの準備
     public Realm realm;
 
+    // EditTextの準備
+    // アクセス修飾子は任意
     public EditText titleEditText;
     public EditText contentEditText;
 
-//    SharedPreferences pref;
-//    SharedPreferences.Editor editor;
-
+    // Overrideアノテーション
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
 
+        // 関連付け
         titleEditText = findViewById(R.id.titleEditText);
         contentEditText = findViewById(R.id.contentEditText);
 
+        // realmインスタンスの生成
         realm = Realm.getDefaultInstance();
-
-//        pref = getSharedPreferences("tasks",MODE_PRIVATE);
 
     }
 
-//    データをRealmに保存する
+    // データをRealmに保存する
     public void save(final String title,final String updateDate,final String content){
 
         //メモを保存する
+        // executeTransactionメソッド内で記述することにより保存可能
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -52,24 +56,7 @@ public class CreateActivity extends AppCompatActivity {
         });
     }
 
-    //データをSharedPreferenceに保存する
-//    public void save(final String title,final String updateDate,final String content){
-//
-//        // メモを保存する
-//
-//        dateSet.add(updateDate);
-//
-//        editor = pref.edit();
-//
-//        editor.putString(updateDate,title);
-//        editor.putString(updateDate + "_" + title,content);
-//        editor.putBoolean(updateDate + "_" + content,false);
-//        editor.commit();
-//
-//    }
-
-
-    // EditText に入力されたデータを元にMemoを作る
+    // EditText に入力されたデータを元にメモを作成する
     public void create(View v){
 
         // タイトルを取得する
@@ -83,9 +70,6 @@ public class CreateActivity extends AppCompatActivity {
         //内容を取得
         String content = contentEditText.getText().toString();
 
-        //出力してみる
-//        check(title,updateDate,content);
-
         // 保存する
         save(title,updateDate,content);
 
@@ -94,26 +78,11 @@ public class CreateActivity extends AppCompatActivity {
 
     }
 
-    private void check(String title, String updateDate, String content) {
-
-        //Memoクラスのインスタンスを生成する
-        RealmMemo memo = new RealmMemo();
-
-        //それぞれの要素を代入する
-        memo.title = title;
-        memo.updateDate = updateDate;
-        memo.content = content;
-
-        //ログに出してみる
-        Log.d("memo.title",memo.title);
-        Log.d("memo.updateDate",memo.updateDate);
-        Log.d("memo.content",memo.content);
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
+        // realmを閉じる
         realm.close();
     }
 }

@@ -19,12 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MemoActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".CreateActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".DetailActivity"
-            android:parentActivityName=".MemoActivity" />
+        <activity android:name=".MemoActivity" />
+        <activity android:name=".CreateActivity" />
+        <activity android:name=".DetailActivity" />
     </application>
 
 </manifest>

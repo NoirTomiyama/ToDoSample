@@ -1,7 +1,8 @@
 package com.lifeistech.android.todosample;
 
-public class Task {
 
+// これも使っていない
+public class Task {
     // 日付
     public String updateDate;
     // タイトル

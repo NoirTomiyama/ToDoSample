@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+// これは使っていない
 public class SharedAdapter extends ArrayAdapter<Task>{
 
     List<Task> mTasks;
