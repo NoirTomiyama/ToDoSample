@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         drawer = findViewById(R.id.drawer_layout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -70,6 +71,9 @@ public class MainActivity extends AppCompatActivity
         explainText = findViewById(R.id.explainText);
 
         statusTextView = findViewById(R.id.statusTextView);
+
+        frameLayout.setVisibility(View.INVISIBLE);
+        explainText.setVisibility(View.INVISIBLE);
 
 
         setMemoList();
@@ -123,8 +127,9 @@ public class MainActivity extends AppCompatActivity
             frameLayout.setVisibility(View.INVISIBLE);
             explainText.setVisibility(View.INVISIBLE);
             statusTextView.setVisibility(View.VISIBLE);
-
         }
+
+
 
         RealmMemoAdapter adapter = new RealmMemoAdapter(this,R.layout.layout_task_memo,items);
 

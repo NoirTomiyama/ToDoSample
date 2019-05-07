@@ -107,10 +107,12 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
             viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     final boolean checked = ((CheckBox) view).isChecked();
+
                     if (checked) {
 //                        Toast.makeText(getContext(),"checked:true",Toast.LENGTH_SHORT).show();
-                        viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#CCCCCC"));
+//                        viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#CCCCCC"));
                         Snackbar.make(parent, "Task marked complete", Snackbar.LENGTH_SHORT)
                                 .setAction("Action", null).show();
 //                        isCheck = true;
@@ -175,7 +177,7 @@ public class RealmMemoAdapter extends ArrayAdapter<RealmMemo> {
         void onCheckClick();
     }
 
-    public void setOnCheckClickListener(OnCheckClickListener onCheckClickListener) {
+    void setOnCheckClickListener(OnCheckClickListener onCheckClickListener) {
         this.onCheckClickListener = onCheckClickListener;
     }
 

@@ -59,7 +59,6 @@ public class DetailActivity extends AppCompatActivity {
 
         titleText.setText(memo.title);
         contentText.setText(memo.content);
-
     }
 
     public void update(View view){
